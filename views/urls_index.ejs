@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+  <header>
+    <% include partials/_header %>
+    </header>
+    <ul>
+      <% Object.keys(urls).forEach(function(key) { %>
+      <li><%= urls[key] + " " + [key] %></li>
+      <% }); %>
+      <form method="POST" action="/urls/9sm5xK/delete">...</form>
+    </ul>
+    <p>
+      <button> 'Delete' </button>
+      <a href="/urls/:id">URL Shortener</a>
+</body>
+</html>
