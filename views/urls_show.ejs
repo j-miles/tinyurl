@@ -8,7 +8,12 @@
     <% include partials/_header %>
     </header>
     <ul>
-      <li><%= link + " " + shortURL %></li>
+        <li><%= "shortURL:" + " " + shortURL %></li>
+        <form method="POST" action="/urls/<%=shortURL%>">
+          <label for="longURL">Update URL: </label>
+          <input id="longURL" type="text" name="longURL" placeholder="<%= link %>" style ="width:300px">
+          <input type="submit" value="update">
+        </form>
     </ul>
       <a href="/urls">Is it working?</a>
 </body>

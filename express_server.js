@@ -59,10 +59,14 @@ app.post("/urls", (req, res) => {
   res.redirect("urls/" + newURL);
 });
 
-app.post("/:id/delete", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
+app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
+});
+
+app.post('/urls/:id', (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect('/urls/' + req.params.id);
 });
 
 
