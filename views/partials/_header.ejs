@@ -1,15 +1,12 @@
 <header>
   <title>TinyApp</title>
-  <% if (username === undefined) { %>
-  <form method="POST" action="/urls/login">
-    <label for="username">Username </label>
-    <input id="username" type="text" name="username">
-    <input type="submit" value="submit">
-  </form>
+  <% if (locals.user) { %>
+    Welcome, <%= user.email %> !
+    <form action="urls/logout" method="POST">
+      <button type="submit">Logout</button>
+    </form>
   <% } else { %>
-  <form method="POST" action="/urls/logout">
-    <input type="submit" value="logout">
-      <ul>User: <%=username%> </ul>
-  </form>
-  <% }; %>
+      <a href="/register">Register</a>  <a href="/login">Login</a></form>
+  <% } %>
 </header>
+

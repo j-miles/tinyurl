@@ -29,18 +29,46 @@ var urlDatabase = {
 
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
+app.get("/register", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    user:users[req.cookies['user_id']]
+  };
+  res.render("urls_register", templateVars);
+});
+
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user:users[req.cookies['user_id']]
   };
   res.render("urls_index", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    user:users[req.cookies['user_id']]
+  };
+  res.render("urls_login", templateVars);
+});
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-  username: req.cookies["username"],
+  user:users[req.cookies['user_id']],
   }
   res.render("urls_new", templateVars);
 });
@@ -49,7 +77,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     link: urlDatabase[req.params.id],
-    username: req.cookies["username"]
+    user:users[req.cookies['user_id']]
     };
   res.render("urls_show", templateVars);
 });
@@ -67,6 +95,57 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.post('/register', (req, res) => {
+  var random = generateRandomString();
+  var authenticated = true;
+  newObj = {};
+  newObj.id = random;
+  newObj.email = req.body.email;
+  newObj.password = req.body.password;
+  if (authenticated) {
+    for(i in users) {
+      if (users[i].email === req.body.email) {
+        authenticated = false;
+      }
+    }
+  if (req.body.email === '' || req.body.password === '') {
+    authenticated = false;
+    }
+    if (authenticated) {
+      users[random] = newObj;
+      res.cookie('user_id', random);
+      res.redirect("/urls");
+      console.log(users);
+    } else {
+      res.statusCode = 400
+      res.send('400');
+      }
+    }
+});
+
+app.post('/login', (req, res) => {
+  var loggedIn = false;
+  if (!loggedIn) {
+    for(i in users){
+      if (users[i].email === req.body.email && users[i].password === req.body.password)
+        loggedIn = true
+    }
+    if (loggedIn) {
+      res.cookie('user_id', users[i].id);
+      res.redirect('/urls');
+      console.log(users[i].id);
+    } else {
+      res.statusCode = 403;
+      res.send('403');
+    }
+  }
+});
+
+app.post('/urls/logout', (req, res) => {
+  res.clearCookie('user_id');
+  res.redirect('/urls');
+});
+
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
@@ -77,16 +156,7 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls/' + req.params.id);
 });
 
-app.post('/urls/login', (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect('/urls');
-});
-
-app.post('/urls/logout', (req, res) => {
-  res.clearCookie('username');
-  res.redirect('/urls');
-});
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp app listening on port ${PORT}!`);
 });
