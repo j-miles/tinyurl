@@ -24,9 +24,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-
+  "b2xVn2": {
+  longURL:"http://www.lighthouselabs.ca",
+  shortURL:"b2xVn2",
+  user_id:"6DwtSg"
+},
+  "9sm5xK": {
+  longURL:"http://www.google.com",
+  shortURL:"9sm5xK",
+  user_id:"h5DF3s"
+}
 };
 
 const users = {
@@ -70,13 +77,17 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
   user:users[req.cookies['user_id']],
   }
+  if (users[req.cookies['user_id']] === undefined){
+  res.redirect("/urls");
+  } else {
   res.render("urls_new", templateVars);
+}
 });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
-    link: urlDatabase[req.params.id],
+    link: urlDatabase[req.params.id].longURL,
     user:users[req.cookies['user_id']]
     };
   res.render("urls_show", templateVars);
@@ -85,13 +96,18 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters
   var random = generateRandomString();
-  urlDatabase[random] = req.body.longURL
+  console.log(req.cookies);
+  newObj = {};
+  newObj.user_id = req.cookies.user_id;
+  newObj.shortURL = random;
+  newObj.longURL = req.body.longURL;
+  urlDatabase[random] = newObj;
   var newURL = random;
   res.redirect("urls/" + newURL);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL]
+  let longURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(longURL);
 });
 
